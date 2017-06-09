@@ -30,9 +30,17 @@ const MIDFIELD_EVENTS = {
   3: 'header'
 };
 
+const ATTACK_EVENTS = {
+  0: 'shortpass',
+  1: 'dribble',
+  2: 'shot',
+  3: 'header'
+};
+
 class Engine {
 
   constructor() {
+    this.time = 0;
     this.ballAtTeam = 0;
     this.ballAtSection = 2;
   }
@@ -43,6 +51,14 @@ class Engine {
 
   getBallAtTeam() {
     return this.ballAtTeam;
+  }
+
+  setBallPosition() {
+    const currentPosition = this.getBallPosition();
+    const currentBallAtTeam = this.getBallAtTeam();
+    const newBallPosition = currentBallAtTeam === 0 ? 3 : 1;
+
+    this.ballAtSection = newBallPosition;
   }
 
   getBallPosition() {
@@ -82,11 +98,28 @@ class Engine {
   }
 
   attack() {
-    console.log('attack')
+    const eventId = Math.floor(Math.random() * 4) + 1;
+    const attEvent = 'shot'//ATTACK_EVENTS[eventId];
+
+    switch(attEvent) {
+    case 'shortpass':
+      this.doShortpass();
+      break;
+    case 'dribble':
+      console.log('dribble');
+      break;
+    case 'shot':
+      this.doShot();
+      break;
+    case 'header':
+      console.log('header');
+      break;
+    }
   }
 
   event(min) {
     const ballPos = this.getBallPosition();
+    const teamInPossesion = this.getBallAtTeam();
 
     console.log(`#### ${min} ####`);
 
@@ -95,13 +128,13 @@ class Engine {
       this.goalkeeper();
       break;
     case 1:
-      this.defence();
+      teamInPossesion === 0 ? this.defence() : this.attack();
       break;
     case 2:
       this.midfield();
       break;
     case 3:
-      this.attack();
+      teamInPossesion === 0 ? this.attack() : this.defence();
       break;
     }
 
@@ -131,7 +164,19 @@ class Engine {
       }
 
     } else {
-      // do attack pass
+      console.log(`${attackingTeam.name} tries a pass to an attacker`);
+
+      const attackProbability = attackingTeam.mid + attackingTeam.att + Math.floor(Math.random() * 10) + 1;
+      const defenceProbability = defendingTeam.def + defendingTeam.mid + Math.floor(Math.random() * 10) + 1;
+
+      if(attackProbability > defenceProbability) {
+        console.log(`${attackingTeam.name} makes a successful pass`);
+        this.setBallPosition();
+      } else {
+        console.log(`${defendingTeam.name} intercepts the pass`);
+        //TODO: determine if defence or midfield intercepts pass and set section accordingly
+        this.setBallAtTeam(ballAtTeam === 0 ? 1 : 0);
+      }
     }
 
     // get formation
@@ -143,6 +188,48 @@ class Engine {
     // if success to attack update ballAtSection
     // if fail to midfield update ballAtTeam
     // if fail to attack update ballAtTeam and ballAtSection
+  }
+
+  doShot() {
+    // get attackers
+    // try shot
+
+    const shotOptions = {
+      'on-target': 0.5,
+      'off-target': 0.5
+    };
+
+    const shotOutcome = weighted.select(shotOptions);
+
+    if(shotOutcome === 'on-target') {
+      const onTargetOptions = {
+        'goal': 0.5,
+        'save': 0.5,
+        'blocked': 0.2
+      };
+
+      const onTargetOutcome = weighted.select(onTargetOptions);
+
+      console.log(onTargetOutcome);
+    } else {
+      const offTargetOptions = {
+        'goalkick': 0.7,
+        'deflected': 0.3
+      };
+
+      const offTargetOutcome = weighted.select(offTargetOptions);
+
+      console.log(offTargetOutcome);
+    }
+
+    // outcomes:
+      // shot on target
+        // Goal
+        // Keeper saves
+        // Blocked my defender
+      // shot off target
+        // Goal kick
+        // Deflected -> Corner kick
   }
 
   simulate() {
