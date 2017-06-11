@@ -1,12 +1,12 @@
 import Simulator from '../classes/Simulator';
 
-export class GoalkeeperEvents extends Simulator {
+export class DefenceEvents extends Simulator {
 
   constructor() {
     super();
   }
 
   events() {
-    //console.log('goalkeeper');
+    //console.log('defence');
   }
 }
