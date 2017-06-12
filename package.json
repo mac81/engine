@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "i18next": "^8.4.2",
     "weighted": "^0.3.0"
   },
   "devDependencies": {

@@ -1,7 +1,7 @@
 //import {GoalkeeperEvents} from '../events/Goalkeeper';
-//import {DefenceEvents} from '../events/Defence';
+import {DefenceEvents} from '../events/Defence';
 import {MidfieldEvents} from '../events/Midfield';
-//import {OffenceEvents} from '../events/Offence';
+import {OffenceEvents} from '../events/Offence';
 
 /* Zones
 | GK | DEF | MID | OFF | GK |
@@ -10,14 +10,16 @@ import {MidfieldEvents} from '../events/Midfield';
 
 export default class Simulator {
 
-  constructor() {
+  constructor(home, away) {
     this.teamInPossesion = 0;
     this.ballAtZone = 2;
+    this.hometeam = home;
+    this.awayteam = away;
 
     //this.goalkeeperEvents = new GoalkeeperEvents();
-    //this.defenceEvents = new DefenceEvents();
-    this.midfieldEvents = new MidfieldEvents();
-    //this.offenceEvents = new OffenceEvents();
+    this.defenceEvents = new DefenceEvents(home, away);
+    this.midfieldEvents = new MidfieldEvents(home, away);
+    this.offenceEvents = new OffenceEvents(home, away);
   }
 
   setTeamInPossesion() {
@@ -44,31 +46,40 @@ export default class Simulator {
     switch(ballPosition) {
       case 0:
       case 4:
-        //this.simulateGoalkeeperEvent();
+        return this.eventHandler(this.defenceEvents.simulate(teamInPossesion));
         break;
       case 1:
-        break;
+        if(teamInPossesion === 0) {
+          return this.eventHandler(this.defenceEvents.simulate(teamInPossesion));
+        } else {
+          return this.eventHandler(this.offenceEvents.simulate(teamInPossesion));
+        }
       case 2:
-        return this.simulateMidfieldEvent();
+        return this.eventHandler(this.midfieldEvents.simulate(teamInPossesion));
       case 3:
-        break;
+        if(teamInPossesion === 0) {
+          return this.eventHandler(this.offenceEvents.simulate(teamInPossesion));
+        } else {
+          return this.eventHandler(this.defenceEvents.simulate(teamInPossesion));
+        }
     }
   }
 
   eventHandler(event) {
-    const {eventType} = event;
-
-    switch(eventType) {
-      case 'passToMidfieldFailed':
+    switch(event.eventType) {
+      case 'shortpassToMidfieldFailed':
+      case 'shortpassToMidfieldIntercepted':
         this.setTeamInPossesion();
         break;
-      case 'passToMidfieldSucceded':
+      case 'shortpassToMidfieldSucceded':
+        this.setBallPosition(2);
         break;
-      case 'passToOffenceFailed':
+      case 'shortpassToOffenceIntercepted':
         this.setBallPosition(this.getTeamInPossesion() === 0 ? 3 : 1);
         this.setTeamInPossesion();
         break;
-      case 'passToOffenceSucceded':
+
+      case 'shortpassToOffenceSucceded':
         this.setBallPosition(this.getTeamInPossesion() === 0 ? 3 : 1);
         break;
       case 'goal':
@@ -82,10 +93,6 @@ export default class Simulator {
     }
 
     return event;
-  }
-
-  simulateMidfieldEvent() {
-    return this.eventHandler(this.midfieldEvents.events());
   }
 
 }

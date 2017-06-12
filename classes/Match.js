@@ -1,22 +1,47 @@
 import Simulator from '../classes/Simulator';
+import i18next from 'i18next';
 import weighted from 'weighted';
 import colors from 'colors';
 
 var home = {
   name: 'United',
   gk: 50,
-  def: 50,
-  mid: 50,
-  att: 50,
+  defence: {
+    passing: 50,
+    technique: 50,
+    positioning: 50
+  },
+  midfield: {
+    passing: 50,
+    technique: 50,
+    positioning: 50
+  },
+  offence: {
+    passing: 50,
+    technique: 50,
+    positioning: 50
+  },
   formation: [4,4,2]
 };
 
 var away = {
   name: 'City',
   gk: 50,
-  def: 50,
-  mid: 50,
-  att: 50,
+  defence: {
+    passing: 50,
+    technique: 50,
+    positioning: 50
+  },
+  midfield: {
+    passing: 50,
+    technique: 50,
+    positioning: 50
+  },
+  offence: {
+    passing: 50,
+    technique: 50,
+    positioning: 50
+  },
   formation: [4,4,2]
 };
 
@@ -50,15 +75,10 @@ const TEAMS = {
 // import {MidfieldEvents} from '../events/Midfield';
 // import {OffenceEvents} from '../events/Offence';
 
-export class Match extends Simulator {
+export class Match {
 
   constructor() {
-    super();
-
-    // this.goalkeeperEvents = new GoalkeeperEvents();
-    // this.defenceEvents = new DefenceEvents();
-    // this.midfieldEvents = new MidfieldEvents();
-    // this.offenceEvents = new OffenceEvents();
+    this.simulator = new Simulator(home, away);
   }
 
   // kickoff() {
@@ -66,89 +86,6 @@ export class Match extends Simulator {
   //   const attackingTeam = teamInPossesion === 0 ? TEAMS[0] : TEAMS[1];
   //   return `${attackingTeam.name} to kickoff`;
   // }
-
-  generateEvent(eventType) {
-
-    // if(eventType === 'kickoff') {
-    //   return this.kickoff();
-    // }
-
-    // console.log(this.getBallPosition());
-    // this.setBallPosition(3);
-    // console.log(this.getBallPosition());
-
-    // console.log('generating event');
-    //
-    // const events = [];
-    // events.push(this.goalkeeperEvents.events());
-    // events.push(this.defenceEvents.events());
-    // events.push(this.midfieldEvents.events());
-    // events.push(this.offenceEvents.events());
-    // return events;
-
-    // const ballPosition = this.getBallPosition();
-    // console.log(ballPosition);
-    // const teamInPossesion = this.getTeamInPossesion();
-    //
-    // console.log('getting zone from match: ', super.getBallPosition());
-
-    // console.log('ballPosition: ', this.getBallPosition());
-    // console.log('setting ballPosition 1');
-    // this.setBallPosition(1);
-    // console.log('ballPosition: ', this.getBallPosition());
-    // console.log('setting ballPosition 3');
-    // this.setBallPosition(3);
-    // console.log('ballPosition: ', this.getBallPosition());
-
-    // switch(ballPosition) {
-    // case 0:
-    // case 4:
-    // console.log('gk');
-    // break;
-    //   //return this.goalkeeperEvents.events();
-    // case 1:
-    // console.log('def');
-    // break;
-    //   //return teamInPossesion === 0 ? this.defenceEvents.events() : this.offenceEvents.events();
-    // case 2:
-    //   return this.eventHandler(this.midfieldEvents.events());
-    //   //return this.midfieldEvents.events().eventMessage;
-    // case 3:
-    //   return this.eventHandler(this.offenceEvents.events());
-    //   //return teamInPossesion === 0 ? this.offenceEvents.events() : this.defenceEvents.events();
-    // }
-  }
-  //
-  // goalkeeperEvents() {
-  //   const eventId = Math.floor(Math.random() * 2) + 1;
-  //   const event = GOALKEEPER_EVENTS[eventId];
-  //
-  //   switch(event) {
-  //   case 'throw':
-  //     return this.doShortpass();
-  //   case 'kick':
-  //     return this.doShortpass();
-  //   }
-  // }
-  //
-  // defence() {
-  //   const defEvent = 'shortpass'//MIDFIELD_EVENTS[eventId];
-  //
-  //   switch(defEvent) {
-  //   case 'shortpass':
-  //     return this.doShortpass();
-  //   case 'longpass':
-  //     console.log('long ball');
-  //     break;
-  //   case 'dribble':
-  //     console.log('dribble');
-  //     break;
-  //   case 'header':
-  //     console.log('header');
-  //     break;
-  //   }
-  // }
-  //
 
   simulate() {
     let event;
@@ -161,10 +98,25 @@ export class Match extends Simulator {
       //   continue;
       // }
 
-      event = this.simulateEvent();
-      console.log('Event: ', event);
+      event = this.simulator.simulateEvent();
+      const eventMessages = this.messageHandler(event);
+
+      //console.log(event);
+
+      eventMessages.forEach(function(message) {
+        console.log(message);
+      });
       //event === 'goal' ? console.log(colors.rainbow(event.toUpperCase())) : console.log(event);
     }
+  }
+
+  messageHandler(event) {
+    const eventMessages = [];
+
+    eventMessages.push(i18next.t(event.attemptType, { team: event.attemptTeam.name }));
+    eventMessages.push(i18next.t(event.eventType, { team: event.resultTeam.name }));
+
+    return eventMessages;
   }
 
 }

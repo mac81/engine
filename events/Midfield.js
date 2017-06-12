@@ -1,28 +1,3 @@
-//import Simulator from '../classes/Simulator';
-
-var home = {
-  name: 'United',
-  gk: 50,
-  def: 50,
-  mid: 50,
-  att: 50,
-  formation: [4,4,2]
-};
-
-var away = {
-  name: 'City',
-  gk: 50,
-  def: 50,
-  mid: 50,
-  att: 50,
-  formation: [4,4,2]
-};
-
-const TEAMS = {
-  0: home,
-  1: away
-};
-
 const MIDFIELD_EVENTS = {
   0: 'shortpass',
   1: 'longpass',
@@ -32,12 +7,14 @@ const MIDFIELD_EVENTS = {
 
 export class MidfieldEvents {
 
-  constructor() {
-    //super();
+  constructor(home, away) {
+    this.hometeam = home;
+    this.awayteam = away;
   }
 
-  events(teamInPossesion) {
+  simulate(teamInPossesion) {
     this.teamInPossesion = teamInPossesion;
+
     const eventId = Math.floor(Math.random() * 4) + 1;
     const midEvent = 'shortpass'//MIDFIELD_EVENTS[eventId];
 
@@ -57,61 +34,65 @@ export class MidfieldEvents {
   }
 
   shortpass() {
-    const teamInPossesion = this.teamInPossesion;
-    //const ballPos = super.getBallPosition();
-
-    const attackingTeam = teamInPossesion === 0 ? TEAMS[0] : TEAMS[1];
-    const defendingTeam = teamInPossesion === 0 ? TEAMS[1] : TEAMS[0];
-
-    // if(ballPos === 0 || ballPos === 4) {
-    //   this.setBallPosition(2);
-    //   return `${attackingTeam.name}'s goalkeeper makes a successful pass to another teammember`;
-    // }
+    const attackingTeam = this.teamInPossesion === 0 ? this.hometeam : this.awayteam;
+    const defendingTeam = this.teamInPossesion === 0 ? this.awayteam : this.hometeam;
 
     const attackStatPoints = attackingTeam.formation[1] + attackingTeam.formation[2];
     const passTo = Math.floor(Math.random() * attackStatPoints) + 1;
 
-    if(passTo <= 4) {
-      console.log(`${attackingTeam.name} tries a pass to another midfielder`);
+    // Pass to another midfielder
+    if(passTo <= 0) {
 
-      const attackProbability = attackingTeam.mid + Math.floor(Math.random() * 20) + 1;
-      const defenceProbability = defendingTeam.mid + Math.floor(Math.random() * 10) + 1;
+      const attackProbability = attackingTeam.midfield.passing + Math.floor(Math.random() * 20) + 1;
+      const defenceProbability = defendingTeam.midfield.passing + Math.floor(Math.random() * 10) + 1;
 
       if(attackProbability > defenceProbability) {
-        return {
-          eventType: 'passToMidfieldSucceded',
-          eventMessage: `${attackingTeam.name} makes a successful pass to another midfielder`
+        const successProbability = attackingTeam.midfield.passing + Math.floor(Math.random() * 20) + 1;
+        const failureProbability = attackingTeam.midfield.positioning + Math.floor(Math.random() * 5) + 1;
+        if(successProbability > failureProbability) {
+          return {
+            attemptTeam: this.teamInPossesion === 0 ? this.hometeam : this.awayteam,
+            resultTeam: this.teamInPossesion === 0 ? this.hometeam : this.awayteam,
+            attemptType: 'shortpassToMidfield',
+            eventType: 'shortpassToMidfieldSucceded'
+          }
+        } else {
+          return {
+            attemptTeam: this.teamInPossesion === 0 ? this.hometeam : this.awayteam,
+            resultTeam: this.teamInPossesion === 0 ? this.hometeam : this.awayteam,
+            attemptType: 'shortpassToMidfield',
+            eventType: 'shortpassToMidfieldFailed'
+          }
         }
-        //return `${attackingTeam.name} makes a successful pass to another midfielder`;
       } else {
         return {
-          eventType: 'passToMidfieldFailed',
-          eventMessage: `${defendingTeam.name} intercepts the pass`
+          attemptTeam: this.teamInPossesion === 0 ? this.hometeam : this.awayteam,
+          resultTeam: this.teamInPossesion === 0 ? this.awayteam : this.hometeam,
+          attemptType: 'shortpassToMidfield',
+          eventType: 'shortpassToMidfieldIntercepted'
         }
-        //this.setTeamInPossesion(teamInPossesion === 0 ? 1 : 0);
-        //return `${defendingTeam.name} intercepts the pass`;
       }
 
-    } else {
-      console.log(`${attackingTeam.name} tries a pass to an attacker`);
+    }
+    // Pass to an attacker
+    else {
+      const attackProbability = attackingTeam.midfield.passing + attackingTeam.offence.passing + Math.floor(Math.random() * 10) + 1;
+      const defenceProbability = defendingTeam.defence.positioning + defendingTeam.midfield.positioning + Math.floor(Math.random() * 10) + 1;
 
-      const attackProbability = attackingTeam.mid + attackingTeam.att + Math.floor(Math.random() * 10) + 1;
-      const defenceProbability = defendingTeam.def + defendingTeam.mid + Math.floor(Math.random() * 10) + 1;
-
-      if(attackProbability > defenceProbability) {
-        //super.setBallPosition(teamInPossesion === 0 ? 3 : 1);
+      if(attackProbability > 0) {
         return {
-          eventType: 'passToOffenceSucceded',
-          eventMessage: `${attackingTeam.name} makes a successful pass to an attacker`
+          attemptTeam: this.teamInPossesion === 0 ? this.hometeam : this.awayteam,
+          resultTeam: this.teamInPossesion === 0 ? this.hometeam : this.awayteam,
+          attemptType: 'shortpassToOffence',
+          eventType: 'shortpassToOffenceSucceded'
         }
       } else {
-        //TODO: determine if defence or midfield intercepts pass and set section accordingly
-        //this.setTeamInPossesion(teamInPossesion === 0 ? 1 : 0);
         return {
-          eventType: 'passToOffenceFailed',
-          eventMessage: `${defendingTeam.name} intercepts the pass`
+          attemptTeam: this.teamInPossesion === 0 ? this.hometeam : this.awayteam,
+          resultTeam: this.teamInPossesion === 0 ? this.awayteam : this.hometeam,
+          attemptType: 'shortpassToOffence',
+          eventType: 'shortpassToOffenceIntercepted'
         }
-        //return `${defendingTeam.name} intercepts the pass`;
       }
     }
   }
