@@ -1,4 +1,4 @@
-//import {GoalkeeperEvents} from '../events/Goalkeeper';
+import {GoalkeeperEvents} from '../events/Goalkeeper';
 import {DefenceEvents} from '../events/Defence';
 import {MidfieldEvents} from '../events/Midfield';
 import {OffenceEvents} from '../events/Offence';
@@ -16,7 +16,7 @@ export default class Simulator {
     this.hometeam = home;
     this.awayteam = away;
 
-    //this.goalkeeperEvents = new GoalkeeperEvents();
+    this.goalkeeperEvents = new GoalkeeperEvents(home, away);
     this.defenceEvents = new DefenceEvents(home, away);
     this.midfieldEvents = new MidfieldEvents(home, away);
     this.offenceEvents = new OffenceEvents(home, away);
@@ -39,14 +39,14 @@ export default class Simulator {
     return this.ballAtZone;
   }
 
-  simulateEvent() {
+  simulateEvent(prevEvent) {
     const ballPosition = this.getBallPosition();
     const teamInPossesion = this.getTeamInPossesion();
 
     switch(ballPosition) {
       case 0:
       case 4:
-        return this.eventHandler(this.defenceEvents.simulate(teamInPossesion));
+        return this.eventHandler(this.goalkeeperEvents.simulate(teamInPossesion));
         break;
       case 1:
         if(teamInPossesion === 0) {
@@ -55,7 +55,7 @@ export default class Simulator {
           return this.eventHandler(this.offenceEvents.simulate(teamInPossesion));
         }
       case 2:
-        return this.eventHandler(this.midfieldEvents.simulate(teamInPossesion));
+        return this.eventHandler(this.midfieldEvents.simulate(teamInPossesion, prevEvent));
       case 3:
         if(teamInPossesion === 0) {
           return this.eventHandler(this.offenceEvents.simulate(teamInPossesion));

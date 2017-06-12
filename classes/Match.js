@@ -49,31 +49,6 @@ const TEAMS = {
   0: home,
   1: away
 };
-//
-// const GOALKEEPER_EVENTS = {
-//   0: 'throw',
-//   1: 'kick'
-// };
-//
-// const DEFENCE_EVENTS = {
-//   0: 'shortpass',
-//   1: 'longpass',
-//   2: 'header'
-// };
-//
-
-//
-// const ATTACK_EVENTS = {
-//   0: 'shortpass',
-//   1: 'dribble',
-//   2: 'shot',
-//   3: 'header'
-// };
-//console.log('import match');
-// import {GoalkeeperEvents} from '../events/Goalkeeper';
-// import {DefenceEvents} from '../events/Defence';
-// import {MidfieldEvents} from '../events/Midfield';
-// import {OffenceEvents} from '../events/Offence';
 
 export class Match {
 
@@ -98,7 +73,7 @@ export class Match {
       //   continue;
       // }
 
-      event = this.simulator.simulateEvent();
+      event = this.simulator.simulateEvent(event);
       const eventMessages = this.messageHandler(event);
 
       //console.log(event);

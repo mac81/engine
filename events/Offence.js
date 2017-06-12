@@ -1,5 +1,12 @@
 import weighted from 'weighted';
 
+const ATTACK_EVENTS = {
+  0: 'shortpass',
+  1: 'dribble',
+  2: 'shot',
+  3: 'header'
+};
+
 export class OffenceEvents {
 
   constructor(home, away) {

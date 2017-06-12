@@ -1,3 +1,9 @@
+const DEFENCE_EVENTS = {
+  0: 'shortpass',
+  1: 'longpass',
+  2: 'header'
+};
+
 export class DefenceEvents {
 
   constructor(home, away) {

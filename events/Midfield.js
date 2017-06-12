@@ -12,13 +12,14 @@ export class MidfieldEvents {
     this.awayteam = away;
   }
 
-  simulate(teamInPossesion) {
+  simulate(teamInPossesion, prevEvent) {
     this.teamInPossesion = teamInPossesion;
+    this.prevEvent = prevEvent;
 
     const eventId = Math.floor(Math.random() * 4) + 1;
-    const midEvent = 'shortpass'//MIDFIELD_EVENTS[eventId];
+    const event = 'shortpass'//MIDFIELD_EVENTS[eventId];
 
-    switch(midEvent) {
+    switch(event) {
     case 'shortpass':
       return this.shortpass();
     case 'longpass':
@@ -41,7 +42,7 @@ export class MidfieldEvents {
     const passTo = Math.floor(Math.random() * attackStatPoints) + 1;
 
     // Pass to another midfielder
-    if(passTo <= 0) {
+    if(passTo <= 4) {
 
       const attackProbability = attackingTeam.midfield.passing + Math.floor(Math.random() * 20) + 1;
       const defenceProbability = defendingTeam.midfield.passing + Math.floor(Math.random() * 10) + 1;
@@ -79,7 +80,7 @@ export class MidfieldEvents {
       const attackProbability = attackingTeam.midfield.passing + attackingTeam.offence.passing + Math.floor(Math.random() * 10) + 1;
       const defenceProbability = defendingTeam.defence.positioning + defendingTeam.midfield.positioning + Math.floor(Math.random() * 10) + 1;
 
-      if(attackProbability > 0) {
+      if(attackProbability > defenceProbability) {
         return {
           attemptTeam: this.teamInPossesion === 0 ? this.hometeam : this.awayteam,
           resultTeam: this.teamInPossesion === 0 ? this.hometeam : this.awayteam,
