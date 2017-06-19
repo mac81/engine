@@ -14,6 +14,14 @@ export class OffenceEvents {
     this.awayteam = away;
   }
 
+  getAttackingTeam() {
+    return this.teamInPossesion === 0 ? this.hometeam : this.awayteam;
+  }
+
+  getDefendingTeam() {
+    return this.teamInPossesion === 0 ? this.awayteam : this.hometeam;
+  }
+
   simulate(teamInPossesion) {
     this.teamInPossesion = teamInPossesion;
 
@@ -27,8 +35,8 @@ export class OffenceEvents {
   }
 
   shot() {
-    const attackingTeam = this.teamInPossesion === 0 ? this.hometeam : this.awayteam;
-    const defendingTeam = this.teamInPossesion === 0 ? this.awayteam : this.hometeam;
+    const attackingTeam = this.getAttackingTeam();
+    const defendingTeam = this.getDefendingTeam();
 
     const shotOptions = {
       'on-target': 0.5,
@@ -37,35 +45,58 @@ export class OffenceEvents {
 
     const shotOutcome = weighted.select(shotOptions);
 
+    let resultOptions;
+
     if(shotOutcome === 'on-target') {
-      const onTargetOptions = {
+      resultOptions = {
         'goal': 1,
-        'saved': 0
+        'save': 0
       };
-
-      const onTargetOutcome = weighted.select(onTargetOptions);
-
-      return {
-        attemptTeam: this.teamInPossesion === 0 ? this.hometeam : this.awayteam,
-        resultTeam: this.teamInPossesion === 0 ? this.awayteam : this.hometeam,
-        attemptType: 'shot',
-        eventType: onTargetOutcome
-      }
-
     } else {
-      const offTargetOptions = {
+      resultOptions = {
         'goalkick': 1
       };
+    }
 
-      const offTargetOutcome = weighted.select(offTargetOptions);
+    const resultOutcome = weighted.select(resultOptions);
+    const switchTeams = resultOptions === 'goalkick' ? true : false;
 
-      return {
-        attemptTeam: this.teamInPossesion === 0 ? this.hometeam : this.awayteam,
-        resultTeam: this.teamInPossesion === 0 ? this.awayteam : this.hometeam,
-        attemptType: 'shot',
-        eventType: offTargetOutcome
+    return {
+      teams: {
+        attempt: attackingTeam,
+        opponent: defendingTeam
+      },
+      attempt: {
+        type: 'shot',
+        target: 'offence',
+        result: shotOutcome
+      },
+      result: {
+        type: resultOutcome,
+        switchTeams: switchTeams
       }
     }
+
+    // } else {
+    //   const offTargetOptions = {
+    //     'goalkick': 1
+    //   };
+    //
+    //   const offTargetOutcome = weighted.select(offTargetOptions);
+    //
+    //   return {
+    //     attempt: {
+    //       team: this.teamInPossesion === 0 ? this.hometeam : this.awayteam,
+    //       type: 'shot',
+    //       result: shotOutcome
+    //     },
+    //     result: offTargetOutcome,
+    //     attemptTeam: this.teamInPossesion === 0 ? this.hometeam : this.awayteam,
+    //     resultTeam: this.teamInPossesion === 0 ? this.awayteam : this.hometeam,
+    //     attemptType: 'shot',
+    //     eventType: offTargetOutcome
+    //   }
+    // }
 
     // outcomes:
       // shot on target

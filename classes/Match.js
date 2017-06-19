@@ -1,7 +1,5 @@
 import Simulator from '../classes/Simulator';
-import i18next from 'i18next';
-import weighted from 'weighted';
-import colors from 'colors';
+
 
 var home = {
   name: 'United',
@@ -63,35 +61,31 @@ export class Match {
   // }
 
   simulate() {
-    let event;
+    const matchReport = this.simulator.simulateMatch();
 
-    for(let min = 0; min <= 15; min++ ) {
-      console.log(`#### ${min} ####`.magenta);
-      // if(min === 0 || event === 'goal') {
-      //   event = this.generateEvent('kickoff');
-      //   console.log(event);
-      //   continue;
-      // }
-
-      event = this.simulator.simulateEvent(event);
-      const eventMessages = this.messageHandler(event);
-
-      //console.log(event);
-
-      eventMessages.forEach(function(message) {
-        console.log(message);
-      });
-      //event === 'goal' ? console.log(colors.rainbow(event.toUpperCase())) : console.log(event);
-    }
+    console.log(matchReport);
+    // let event;
+    //
+    // for(let min = 0; min <= 15; min++ ) {
+    //   console.log(`#### ${min} ####`.magenta);
+    //   // if(min === 0 || event === 'goal') {
+    //   //   event = this.generateEvent('kickoff');
+    //   //   console.log(event);
+    //   //   continue;
+    //   // }
+    //
+    //   event = this.simulator.simulateEvent(event);
+    //   const eventMessages = this.messageHandler(event);
+    //
+    //   //console.log(event);
+    //
+    //   eventMessages.forEach(function(message) {
+    //     console.log(message);
+    //   });
+    //   //event === 'goal' ? console.log(colors.rainbow(event.toUpperCase())) : console.log(event);
+    // }
   }
 
-  messageHandler(event) {
-    const eventMessages = [];
 
-    eventMessages.push(i18next.t(event.attemptType, { team: event.attemptTeam.name }));
-    eventMessages.push(i18next.t(event.eventType, { team: event.resultTeam.name }));
-
-    return eventMessages;
-  }
 
 }

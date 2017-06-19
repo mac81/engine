@@ -1,4 +1,26 @@
 const eventMessages = {
+  shortpass: {
+    midfield: {
+      attempt: '{{attackingTeam}} tries a pass to another midfielder',
+      success: '{{attackingTeam}} makes a successful pass to another midfielder',
+      intercept: '{{defendingTeam}} intercepts the pass',
+      fail: '{{attackingTeam}} makes a dreadful pass and the ball goes to a throw in'
+    },
+    offence: {
+      attempt: '{{attackingTeam}} tries a pass to another midfielder',
+      success: '{{attackingTeam}} makes a successful pass to another midfielder',
+      intercept: '{{defendingTeam}} intercepts the pass',
+      fail: '{{attackingTeam}} makes a dreadful pass and the ball goes to a throw in'
+    }
+  },
+  shot: {
+    offence: {
+      attempt: '{{attackingTeam}} tries a pass to another midfielder',
+      success: '{{attackingTeam}} makes a successful pass to another midfielder',
+      intercept: '{{defendingTeam}} intercepts the pass',
+      fail: '{{attackingTeam}} makes a dreadful pass and the ball goes to a throw in'
+    }
+  },
   shortpassToMidfield: '{{team}} tries a pass to another midfielder',
   shortpassToMidfieldSucceded: '{{team}} makes a successful pass to another midfielder',
   shortpassToMidfieldFailed: '{{team}} makes a dreadful pass and the ball goes to a throw in',

@@ -12,6 +12,14 @@ export class MidfieldEvents {
     this.awayteam = away;
   }
 
+  getAttackingTeam() {
+    return this.teamInPossesion === 0 ? this.hometeam : this.awayteam;
+  }
+
+  getDefendingTeam() {
+    return this.teamInPossesion === 0 ? this.awayteam : this.hometeam;
+  }
+
   simulate(teamInPossesion, prevEvent) {
     this.teamInPossesion = teamInPossesion;
     this.prevEvent = prevEvent;
@@ -35,8 +43,8 @@ export class MidfieldEvents {
   }
 
   shortpass() {
-    const attackingTeam = this.teamInPossesion === 0 ? this.hometeam : this.awayteam;
-    const defendingTeam = this.teamInPossesion === 0 ? this.awayteam : this.hometeam;
+    const attackingTeam = this.getAttackingTeam();
+    const defendingTeam = this.getDefendingTeam();
 
     const attackStatPoints = attackingTeam.formation[1] + attackingTeam.formation[2];
     const passTo = Math.floor(Math.random() * attackStatPoints) + 1;
@@ -52,25 +60,49 @@ export class MidfieldEvents {
         const failureProbability = attackingTeam.midfield.positioning + Math.floor(Math.random() * 5) + 1;
         if(successProbability > failureProbability) {
           return {
-            attemptTeam: this.teamInPossesion === 0 ? this.hometeam : this.awayteam,
-            resultTeam: this.teamInPossesion === 0 ? this.hometeam : this.awayteam,
-            attemptType: 'shortpassToMidfield',
-            eventType: 'shortpassToMidfieldSucceded'
+            teams: {
+              attempt: attackingTeam,
+              opponent: defendingTeam
+            },
+            attempt: {
+              type: 'shortpass',
+              target: 'midfield'
+            },
+            result: {
+              type: 'success',
+              switchTeams: false
+            }
           }
         } else {
           return {
-            attemptTeam: this.teamInPossesion === 0 ? this.hometeam : this.awayteam,
-            resultTeam: this.teamInPossesion === 0 ? this.hometeam : this.awayteam,
-            attemptType: 'shortpassToMidfield',
-            eventType: 'shortpassToMidfieldFailed'
+            teams: {
+              attempt: attackingTeam,
+              opponent: defendingTeam
+            },
+            attempt: {
+              type: 'shortpass',
+              target: 'midfield'
+            },
+            result: {
+              type: 'fail',
+              switchTeams: true
+            }
           }
         }
       } else {
         return {
-          attemptTeam: this.teamInPossesion === 0 ? this.hometeam : this.awayteam,
-          resultTeam: this.teamInPossesion === 0 ? this.awayteam : this.hometeam,
-          attemptType: 'shortpassToMidfield',
-          eventType: 'shortpassToMidfieldIntercepted'
+          teams: {
+            attempt: attackingTeam,
+            opponent: defendingTeam
+          },
+          attempt: {
+            type: 'shortpass',
+            target: 'midfield'
+          },
+          result: {
+            type: 'intercept',
+            switchTeams: true
+          }
         }
       }
 
@@ -82,17 +114,33 @@ export class MidfieldEvents {
 
       if(attackProbability > defenceProbability) {
         return {
-          attemptTeam: this.teamInPossesion === 0 ? this.hometeam : this.awayteam,
-          resultTeam: this.teamInPossesion === 0 ? this.hometeam : this.awayteam,
-          attemptType: 'shortpassToOffence',
-          eventType: 'shortpassToOffenceSucceded'
+          teams: {
+            attempt: attackingTeam,
+            opponent: defendingTeam
+          },
+          attempt: {
+            type: 'shortpass',
+            target: 'offence'
+          },
+          result: {
+            type: 'success',
+            switchTeams: false
+          }
         }
       } else {
         return {
-          attemptTeam: this.teamInPossesion === 0 ? this.hometeam : this.awayteam,
-          resultTeam: this.teamInPossesion === 0 ? this.awayteam : this.hometeam,
-          attemptType: 'shortpassToOffence',
-          eventType: 'shortpassToOffenceIntercepted'
+          teams: {
+            attempt: attackingTeam,
+            opponent: defendingTeam
+          },
+          attempt: {
+            type: 'shortpass',
+            target: 'offence'
+          },
+          result: {
+            type: 'intercept',
+            switchTeams: true
+          }
         }
       }
     }

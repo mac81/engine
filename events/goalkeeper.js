@@ -24,10 +24,18 @@ export class GoalkeeperEvents {
 
   shortpass() {
     return {
-      attemptTeam: this.teamInPossesion === 0 ? this.hometeam : this.awayteam,
-      resultTeam: this.teamInPossesion === 0 ? this.hometeam : this.awayteam,
-      attemptType: 'shortpassToMidfield',
-      eventType: 'shortpassToMidfieldSucceded'
+      teams: {
+        attempt: this.teamInPossesion === 0 ? this.hometeam : this.awayteam,
+        opponent: this.teamInPossesion === 0 ? this.awayteam : this.hometeam
+      },
+      attempt: {
+        type: 'shortpass',
+        target: 'midfield'
+      },
+      result: {
+        type: 'success',
+        switchTeams: false
+      }
     }
   }
 }
