@@ -49,8 +49,8 @@ export class OffenceEvents {
 
     if(shotOutcome === 'on-target') {
       resultOptions = {
-        'goal': 1,
-        'save': 0
+        'goal': 0.5,
+        'save': 0.5
       };
     } else {
       resultOptions = {
@@ -59,7 +59,6 @@ export class OffenceEvents {
     }
 
     const resultOutcome = weighted.select(resultOptions);
-    const switchTeams = resultOptions === 'goalkick' ? true : false;
 
     return {
       teams: {
@@ -67,44 +66,14 @@ export class OffenceEvents {
         opponent: defendingTeam
       },
       attempt: {
-        type: 'shot',
-        target: 'offence',
-        result: shotOutcome
+        type: `${shotOutcome}-shot`,
+        from: 'offence',
+        to: 'offence'
       },
       result: {
         type: resultOutcome,
-        switchTeams: switchTeams
+        switchTeams: true
       }
     }
-
-    // } else {
-    //   const offTargetOptions = {
-    //     'goalkick': 1
-    //   };
-    //
-    //   const offTargetOutcome = weighted.select(offTargetOptions);
-    //
-    //   return {
-    //     attempt: {
-    //       team: this.teamInPossesion === 0 ? this.hometeam : this.awayteam,
-    //       type: 'shot',
-    //       result: shotOutcome
-    //     },
-    //     result: offTargetOutcome,
-    //     attemptTeam: this.teamInPossesion === 0 ? this.hometeam : this.awayteam,
-    //     resultTeam: this.teamInPossesion === 0 ? this.awayteam : this.hometeam,
-    //     attemptType: 'shot',
-    //     eventType: offTargetOutcome
-    //   }
-    // }
-
-    // outcomes:
-      // shot on target
-        // Goal
-        // Keeper saves
-        // Blocked my defender
-      // shot off target
-        // Goal kick
-        // Deflected -> Corner kick
   }
 }

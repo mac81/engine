@@ -1,38 +1,60 @@
 const eventMessages = {
+  kickoff: "{{team}} kickoff",
+  'short-throw': {
+    goalkeeper: {
+      attempt: "{{attackingTeam}}'s goalkeeper throws it short to {{to}}",
+      success: "{{attackingTeam}}'s goalkeeper makes a successful throw to {{to}}",
+      intercept: "{{defendingTeam}} intercepts the throw",
+      fail: "{{attackingTeam}}'s goalkeeper makes a dreadful throw and the ball goes to a throw in"
+    }
+  },
+  goalkick: {
+    goalkeeper: {
+      attempt: "{{attackingTeam}}'s goalkeeper hits it from the 5 yard mark to {{to}}",
+      success: "{{attackingTeam}}'s goalkeeper makes a successful goalkick to {{to}}",
+      intercept: "{{defendingTeam}} intercepts the goalkick",
+      fail: "{{attackingTeam}}'s goalkeeper makes a dreadful goalkick and the ball goes to a throw in"
+    }
+  },
   shortpass: {
+    goalkeeper: {
+      attempt: "{{attackingTeam}}'s goalkeeper passes it short to {{to}}",
+      success: "{{attackingTeam}}'s goalkeeper makes a successful pass to {{to}}",
+      intercept: "{{defendingTeam}} intercepts the pass",
+      fail: "{{attackingTeam}}'s goalkeeper makes a dreadful pass and the ball goes to a throw in"
+    },
+    defence: {
+      attempt: '{{attackingTeam}} tries a pass from {{from}} to {{to}}',
+      success: '{{attackingTeam}} makes a successful pass to {{to}}',
+      intercept: '{{defendingTeam}} intercepts the pass',
+      fail: '{{attackingTeam}} makes a dreadful pass and the ball goes to a throw in'
+    },
     midfield: {
-      attempt: '{{attackingTeam}} tries a pass to another midfielder',
-      success: '{{attackingTeam}} makes a successful pass to another midfielder',
+      attempt: '{{attackingTeam}} tries a pass from {{from}} to {{to}}',
+      success: '{{attackingTeam}} makes a successful pass to {{to}}',
       intercept: '{{defendingTeam}} intercepts the pass',
       fail: '{{attackingTeam}} makes a dreadful pass and the ball goes to a throw in'
     },
     offence: {
-      attempt: '{{attackingTeam}} tries a pass to another midfielder',
-      success: '{{attackingTeam}} makes a successful pass to another midfielder',
+      attempt: '{{attackingTeam}} tries a pass from {{from}} to {{to}}',
+      success: '{{attackingTeam}} makes a successful pass to {{to}}',
       intercept: '{{defendingTeam}} intercepts the pass',
       fail: '{{attackingTeam}} makes a dreadful pass and the ball goes to a throw in'
     }
   },
-  shot: {
+  'on-target-shot': {
     offence: {
-      attempt: '{{attackingTeam}} tries a pass to another midfielder',
-      success: '{{attackingTeam}} makes a successful pass to another midfielder',
-      intercept: '{{defendingTeam}} intercepts the pass',
-      fail: '{{attackingTeam}} makes a dreadful pass and the ball goes to a throw in'
+      attempt: '{{attackingTeam}} hammers it towards goal',
+      goal: '{{attackingTeam}} scores!!!',
+      save: '{{defendingTeam}} makes a great save',
     }
   },
-  shortpassToMidfield: '{{team}} tries a pass to another midfielder',
-  shortpassToMidfieldSucceded: '{{team}} makes a successful pass to another midfielder',
-  shortpassToMidfieldFailed: '{{team}} makes a dreadful pass and the ball goes to a throw in',
-  shortpassToMidfieldIntercepted: '{{team}} intercepts the pass',
-  shortpassToOffence: '{{team}} passes it short to an attacker',
-  shortpassToOffenceSucceded: '{{team}} makes a successful pass to an attacker',
-  shortpassToOffenceFailed: '{{team}} makes a real mess of the pass.',
-  shortpassToOffenceIntercepted: '{{team}} intercepts the pass',
-  shot: '{{team}} shoots',
-  goalkick: 'goalkick to {{team}}',
-  goal: '{{team}} scores!!!'
-
+  'off-target-shot': {
+    offence: {
+      attempt: '{{attackingTeam}} shoots',
+      goalkick: '{{attackingTeam}} misses by a mile. Goalkick to {{defendingTeam}}'
+    }
+  }
 }
 
 export default eventMessages;

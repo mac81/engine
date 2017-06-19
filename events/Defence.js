@@ -1,7 +1,6 @@
 const DEFENCE_EVENTS = {
   0: 'shortpass',
-  1: 'longpass',
-  2: 'header'
+  1: 'longpass'
 };
 
 export class DefenceEvents {
@@ -31,7 +30,8 @@ export class DefenceEvents {
       },
       attempt: {
         type: 'shortpass',
-        target: 'midfield'
+        from: 'defence',
+        to: 'midfield'
       },
       result: {
         type: 'success',

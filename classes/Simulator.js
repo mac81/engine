@@ -40,7 +40,6 @@ import {OffenceEvents} from '../events/Offence';
      type: 'shot',
      from: 'offence',
      to: 'offence', (Needed?)
-     meta: 'on-target/off-target
    },
    result: {
      type: 'goal/save/goalkick',
@@ -81,26 +80,65 @@ export default class Simulator {
   }
 
   simulateMatch() {
-    let event;
-    const eventMessages = [];
+    let event = null;
+    let homescore = 0;
+    let awayscore = 0;
 
-    for(let min = 0; min <= 15; min++ ) {
+    const eventMessages = {
+      events: [],
+      score: `${homescore} - ${awayscore}`,
+      stats: {
+        home: {
+          onTarget: 0,
+          offTarget: 0
+        },
+        away: {}
+      }
+    };
+
+    for(let min = 0; min <= 90; min++ ) {
+
+      if(!event) {
+        eventMessages.events.push(i18next.t('kickoff', {
+          team: this.hometeam.name
+        }))
+      }
+
       event = this.simulateEvent(event);
 
-      console.log(`#${min} # : `, event);
+      eventMessages.events.push({
+        time: `#### ${min} ####`,
+        attempt: i18next.t(`${event.attempt.type}.${event.attempt.from}.attempt`, {
+          attackingTeam: event.teams.attempt.name,
+          defendingTeam: event.teams.opponent.name,
+          from: event.attempt.from,
+          to: event.attempt.to
+        }),
+        result: i18next.t(`${event.attempt.type}.${event.attempt.from}.${event.result.type}`, {
+          attackingTeam: event.teams.attempt.name,
+          defendingTeam: event.teams.opponent.name,
+          from: event.attempt.from,
+          to: event.attempt.to
+        })
+      });
 
-      // eventMessages.push({
-      //   time: `#### ${min} ####`,
-      //   attempt: i18next.t(`${event.attempt.type}.${event.attempt.target}.attempt`, {
-      //     attackingTeam: event.teams.attempt.name,
-      //     defendingTeam: event.teams.opponent.name
-      //   }),
-      //   result: i18next.t(`${event.attempt.type}.${event.attempt.target}.${event.result.type}`, {
-      //     attackingTeam: event.teams.attempt.name,
-      //     defendingTeam: event.teams.opponent.name
-      //   })
-      //   //result: i18next.t(`${event.attempt.type}.${event.attempt.target}.${event.result.type}`, { team: event.result.switchTeams ? event.teams.opponent.name : event.teams.attempt.name })
-      // });
+      // Best teams should average around 7 per game, worst teams around 2.5
+      if(event.attempt.type === 'on-target-shot') {
+        eventMessages.stats.home.onTarget += 1;
+      }
+
+      // Best teams should average around 18 per game, worst teams around 9
+      if(event.attempt.type === 'off-target-shot') {
+        eventMessages.stats.home.offTarget += 1;
+      }
+
+      if(event.result.type === 'goal') {
+        this.getTeamInPossesion() === 0 ? homescore++ : awayscore++;
+        eventMessages.score = `${homescore} - ${awayscore}`;
+        eventMessages.events.push(i18next.t('kickoff', {
+          team: event.teams.opponent.name
+        }))
+      }
 
       event = this.eventHandler(event);
     }
@@ -108,58 +146,53 @@ export default class Simulator {
     return eventMessages;
   }
 
-  simulateEvent() {
+  simulateEvent(prevEvent) {
     const ballPosition = this.getBallPosition();
     const teamInPossesion = this.getTeamInPossesion();
 
     switch(ballPosition) {
       case 0:
       case 4:
-        return this.goalkeeperEvents.simulate(teamInPossesion);
+        return this.goalkeeperEvents.simulate(teamInPossesion, prevEvent);
         break;
       case 1:
         if(teamInPossesion === 0) {
-          return this.defenceEvents.simulate(teamInPossesion);
+          return this.defenceEvents.simulate(teamInPossesion, prevEvent);
         } else {
-          return this.offenceEvents.simulate(teamInPossesion);
+          return this.offenceEvents.simulate(teamInPossesion, prevEvent);
         }
       case 2:
-        return this.midfieldEvents.simulate(teamInPossesion);
+        return this.midfieldEvents.simulate(teamInPossesion, prevEvent);
       case 3:
         if(teamInPossesion === 0) {
-          return this.offenceEvents.simulate(teamInPossesion);
+          return this.offenceEvents.simulate(teamInPossesion, prevEvent);
         } else {
-          return this.defenceEvents.simulate(teamInPossesion);
+          return this.defenceEvents.simulate(teamInPossesion, prevEvent);
         }
     }
   }
 
   eventHandler(event) {
-    if(event.result.switchTeams) {
-      this.setTeamInPossesion();
+    if(event.attempt.to === 'defence' && event.result.type === 'success') {
+        this.setBallPosition(this.getTeamInPossesion() === 0 ? 1 : 3);
     }
 
-    switch(event.result.type) {
-      case 'shortpassToMidfieldFailed':
-      case 'shortpassToMidfieldIntercepted':
+    if(event.attempt.to === 'midfield') {
+      this.setBallPosition(2);
+    }
 
-        break;
-      case 'shortpassToMidfieldSucceded':
-        this.setBallPosition(2);
-        break;
-      case 'shortpassToOffenceIntercepted':
-        this.setBallPosition(this.getTeamInPossesion() === 0 ? 3 : 1);
-        break;
+    if(event.attempt.to === 'offence') {
+      this.setBallPosition(this.getTeamInPossesion() === 0 ? 3 : 1);
+    }
 
-      case 'shortpassToOffenceSucceded':
-        this.setBallPosition(this.getTeamInPossesion() === 0 ? 3 : 1);
-        break;
-      case 'goal':
-        this.setBallPosition(2);
-        break;
-      case 'goalkick':
-        this.setBallPosition(this.getTeamInPossesion() === 0 ? 4 : 0);
-        break;
+    if(event.result.type === 'save' || event.result.type === 'goalkick') {
+      this.setBallPosition(this.getTeamInPossesion() === 0 ? 4 : 0);
+    } else if(event.result.type === 'goal') {
+      this.setBallPosition(2);
+    }
+
+    if(event.result.switchTeams) {
+      this.setTeamInPossesion();
     }
 
     return event;
